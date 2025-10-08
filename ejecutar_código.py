@@ -19,8 +19,8 @@ import matplotlib.lines as mlines
 from datetime import datetime, timedelta
 
 # Definir la fecha de hoy automáticamente
-hoy = (datetime.today()).strftime('%Y-%m-%d')
-#hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+#hoy = (datetime.today()).strftime('%Y-%m-%d')
+hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 tickers_adrs = ['BBAR', 'BMA', 'CEPU', 'CRESY', 'EDN', 'GGAL', 'IRS','LOMA',
                 'PAM', 'SUPV', 'TEO', 'TGS', 'TS', 'TX', 'YPF']
@@ -293,6 +293,7 @@ Prestamos_usd.set_index('fecha', inplace=True)
 Prestamos_usd = Prestamos_usd[::-1]
 Prestamos_usd = Prestamos_usd.round(0)
 Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
+
 
 
 
