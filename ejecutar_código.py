@@ -276,8 +276,8 @@ RIN.to_csv('Reservas_Netas.csv', index=True)
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/series.xlsm"
 response = requests.get(url, verify=False)
 
-Prestamos_pesos = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,B,C,D,E,F,G,H,I,S,U,V',skiprows=8)
-Prestamos_pesos.columns = ['fecha','Adelantos','Documentos','Hipotecarios','Prendarios','Personales','Tarjetas','Otros','TOTAL pesos','TOTAL usd','TOTAL','Tipo de serie']
+Prestamos_pesos = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,B,C,D,E,F,G,H,I,V',skiprows=8)
+Prestamos_pesos.columns = ['fecha','Adelantos','Documentos','Hipotecarios','Prendarios','Personales','Tarjetas','Otros','TOTAL','Tipo de serie']
 Prestamos_pesos = Prestamos_pesos.loc[Prestamos_pesos['Tipo de serie'] == 'D']
 Prestamos_pesos = Prestamos_pesos.drop(columns=['Tipo de serie'])
 Prestamos_pesos.set_index('fecha', inplace=True)
@@ -293,6 +293,7 @@ Prestamos_usd.set_index('fecha', inplace=True)
 Prestamos_usd = Prestamos_usd[::-1]
 Prestamos_usd = Prestamos_usd.round(0)
 Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
+
 
 
 
