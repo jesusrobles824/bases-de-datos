@@ -276,50 +276,19 @@ RIN.to_csv('Reservas_Netas.csv', index=True)
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/series.xlsm"
 response = requests.get(url, verify=False)
 
-Prestamos = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q,V',skiprows=8)
-#Prestamos.columns = ['fecha','Préstamos en dólares','Tipo de serie']
-Prestamos = Prestamos.loc[Prestamos['Tipo\nde serie'] == 'D']
-Prestamos = Prestamos.drop(columns=['Tipo\nde serie'])
-Prestamos = Prestamos[::-1]
-Prestamos.set_index('Fecha', inplace=True)
+Prestamos_pesos = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,B,C,D,E,F,G,H,I,V',skiprows=8)
+Prestamos_pesos.columns = ['fecha','Adelantos','Documentos','Hipotecarios','Prendarios','Personales','Tarjetas','Otros','TOTAL','Tipo de serie']
+Prestamos_pesos = Prestamos_pesos.loc[Prestamos_pesos['Tipo de serie'] == 'D']
+Prestamos_pesos = Prestamos_pesos.drop(columns=['Tipo de serie'])
+Prestamos_pesos.set_index('fecha', inplace=True)
+Prestamos_pesos = Prestamos_pesos[::-1]
+Prestamos_pesos.to_csv('Préstamos_en_pesos.csv', index=True)
 
-# Función para limpiar y separar las columnas
-def parse_col(col):
-    if "En Pesos" in col:
-        moneda = "En Pesos"
-        tipo = col.split("En Pesos - ")[-1].replace("\n", " ")
-    elif "En Dólares" in col:
-        moneda = "En Dólares"
-        tipo = col.split("En Dólares - ")[-1].replace("\n", " ")
-    elif "Total\nPesos" in col:
-        moneda = "En Pesos"
-        tipo = "TOTAL"
-    elif "Total\nDólares" in col:
-        moneda = "En Dólares"
-        tipo = "TOTAL"
-    else:
-        moneda = "Otro"
-        tipo = col
-    return (moneda, tipo)
-
-# Crear MultiIndex
-multi_cols = pd.MultiIndex.from_tuples([parse_col(c) for c in Prestamos.columns],
-                                       names=["Moneda", "Tipo"])
-
-# Reasignar las columnas con MultiIndex
-Prestamos.columns = multi_cols
-
-Prestamos.to_csv('Prestamos.csv', index=True)
-
-
-
-
-
-
-
-
-
-
-
-
+Prestamos_usd = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,J,K,L,M,N,O,P,Q,V',skiprows=8)
+Prestamos_usd.columns = ['fecha','Adelantos','Documentos','Hipotecarios','Prendarios','Personales','Tarjetas','Otros','TOTAL','Tipo de serie']
+Prestamos_usd = Prestamos_pesos.loc[Prestamos_pesos['Tipo de serie'] == 'D']
+Prestamos_usd = Prestamos_pesos.drop(columns=['Tipo de serie'])
+Prestamos_usd.set_index('fecha', inplace=True)
+Prestamos_usd = Prestamos_pesos[::-1]
+Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
 
