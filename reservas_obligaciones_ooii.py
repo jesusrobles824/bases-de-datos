@@ -1,0 +1,181 @@
+import requests
+import pandas as pd
+import numpy as np
+from datetime import timedelta
+from datetime import datetime
+import datetime
+from io import BytesIO
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.dates as mdates
+import seaborn as sns
+import matplotlib.ticker as ticker
+from matplotlib.lines import Line2D
+from dateutil.relativedelta import relativedelta
+from datetime import datetime
+from pandas.tseries.offsets import MonthEnd
+import matplotlib.lines as mlines
+import matplotlib.image as mpimg
+import yfinance as yf
+
+id = 1
+url = f"https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/{id}"
+hasta = pd.Timestamp.today().strftime('%Y-%m-%d')
+params = {"desde": "2022-12-30", "hasta": hasta}
+response = requests.get(url, params=params)
+
+if response.status_code == 200:
+    data = response.json()
+    Reservas_Brutas = pd.DataFrame(data['results'])[['fecha', 'valor']]
+    Reservas_Brutas = Reservas_Brutas.rename(columns={'valor': 'Reservas_Brutas'})
+    Reservas_Brutas['fecha'] = pd.to_datetime(Reservas_Brutas['fecha'])
+    Reservas_Brutas.set_index('fecha', inplace=True)
+    Reservas_Brutas = Reservas_Brutas[::-1]  # orden cronológico ascendente
+    def cortos(fecha):
+        if fecha.year == 2022 and fecha.month == 12:
+            return 1852.97 
+        elif fecha.year == 2023 and fecha.month == 1:
+            return 1789.32 
+        elif fecha.year == 2023 and fecha.month == 2:
+            return 1813.97
+        elif fecha.year == 2023 and fecha.month == 3:
+            return 1837.34
+        elif fecha.year == 2023 and fecha.month == 4:
+            return 1843.72
+        elif fecha.year == 2023 and fecha.month == 5:
+            return 1808.53 
+        elif fecha.year == 2023 and fecha.month == 6:
+            return 1818.86
+        elif fecha.year == 2023 and fecha.month == 7:
+            return 1835.49
+        elif fecha.year == 2023 and fecha.month == 8:
+            return 1851.24
+        elif fecha.year == 2023 and fecha.month == 9:
+            return 1850.17
+        elif fecha.year == 2023 and fecha.month == 10:
+            return 1858.70    
+        elif fecha.year == 2024 and fecha.month == 11:
+            return 1965.70 
+        elif fecha.year == 2024 and fecha.month == 12:
+            return 1974.28 
+        elif fecha.year == 2025 and fecha.month == 1:
+            return 2073.10
+        elif fecha.year == 2025 and fecha.month == 2:
+            return 2080.24 
+        elif fecha.year == 2025 and fecha.month == 3:
+            return 2094.49 
+        elif fecha.year == 2025 and fecha.month == 4:
+            return 2102.05 
+        elif fecha.year == 2025 and fecha.month == 5:
+            return 2106.09
+        elif fecha.year == 2025 and fecha.month == 6:
+            return 2267.66
+        elif fecha.year == 2025 and fecha.month == 7:
+            return 2278.4
+        elif fecha.year == 2025 and fecha.month == 8:
+            return 2287.02
+        else:
+            return None
+    ultimos_dias = Reservas_Brutas.groupby([Reservas_Brutas.index.year, Reservas_Brutas.index.month]).tail(1)
+    Reservas_Brutas['Cortos'] = np.nan
+    for fecha in ultimos_dias.index:
+        ajuste = cortos(fecha)
+        if ajuste is not None:
+            Reservas_Brutas.loc[fecha, 'Cortos'] = ajuste
+
+Reservas_Brutas.loc[Reservas_Brutas.index>'2025-08-31', 'Cortos'] = 2287.02
+Reservas_Brutas['Cortos'] = pd.to_numeric(Reservas_Brutas['Cortos'], errors='coerce')
+ultimo1 = Reservas_Brutas.loc['2022-12'].index.max()
+ultimo2 = Reservas_Brutas.loc['2025-08'].index.max()
+mask = (Reservas_Brutas.index >= ultimo1) & (Reservas_Brutas.index <= ultimo2)
+ajuste_rango = Reservas_Brutas.loc[mask, 'Cortos'].copy()
+ajuste_rango_interp = ajuste_rango.interpolate(method='linear')
+Reservas_Brutas.loc[mask, 'Cortos'] = ajuste_rango_interp
+Reservas_Brutas.loc[Reservas_Brutas.index > '2025-04-14', 'Reservas_Brutas'] -= 12396.3755085719
+Reservas_Brutas.loc[Reservas_Brutas.index > '2025-08-01', 'Reservas_Brutas'] -= 2072.8
+
+url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/Serieanual.xls"
+response = requests.get(url)
+
+balance_23 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2023',skiprows=3).iloc[[74,107]]
+balance_23 = balance_23.T
+balance_23.columns = balance_23.iloc[0]
+balance_23 = balance_23.drop(balance_23.index[0])
+balance_23.columns.name= None
+balance_23.index.name = "fecha"
+balance_23 = balance_23.reset_index()
+balance_23['fecha'] = pd.to_datetime(balance_23['fecha'], errors='coerce')
+balance_23.loc[balance_23.index[-1], 'fecha'] = pd.Timestamp("2023-12-31")
+balance_23.set_index('fecha',inplace=True)
+balance_23['obligaciones_ooii'] = balance_23['OBLIGACIONES CON ORGANISMOS INTERNACIONALES '] / (1000*balance_23['Tipo de Cambio'])
+balance_23 = balance_23[['obligaciones_ooii']]
+
+balance_24 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2024',skiprows=3).iloc[[74,107]]
+balance_24 = balance_24.T
+balance_24.columns = balance_24.iloc[0]
+balance_24 = balance_24.drop(balance_24.index[0])
+balance_24.columns.name= None
+balance_24.index = pd.to_datetime(balance_24.index)
+balance_24.index.name = "fecha"
+balance_24['obligaciones_ooii'] = balance_24['OBLIGACIONES CON ORGANISMOS INTERNACIONALES '] / (1000*balance_24['Tipo de Cambio'])
+balance_24 = balance_24[['obligaciones_ooii']]
+
+balance_25 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2025',skiprows=3).iloc[[74,107]]
+balance_25 = balance_25.T
+balance_25.columns = balance_25.iloc[0]
+balance_25 = balance_25.drop(balance_25.index[0])
+balance_25.columns.name= None
+balance_25.index = pd.to_datetime(balance_25.index)
+balance_25.index.name = "fecha"
+balance_25['obligaciones_ooii'] = balance_25['OBLIGACIONES CON ORGANISMOS INTERNACIONALES '] / (1000*balance_25['Tipo de Cambio'])
+balance_25 = balance_25[['obligaciones_ooii']]
+
+obligaciones_ooii = pd.concat([balance_23, balance_24, balance_25])
+obligaciones_ooii.to_excel('obligaciones_ooii.xlsx',index=True)
+
+Reservas_Brutas['obligaciones_ooii'] = obligaciones_ooii['obligaciones_ooii'].reindex(
+    Reservas_Brutas.index, method='ffill'
+)
+
+Reservas_Brutas.loc[Reservas_Brutas.index<'2023-01-07','obligaciones_ooii'] = 3131.577122
+
+
+hasta = Reservas_Brutas.index[-1]
+url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/diar_bas.xls"
+response = requests.get(url)
+diar_bas = pd.read_excel(BytesIO(response.content), 
+                         sheet_name='Serie_diaria', 
+                         skiprows=26, 
+                         usecols='A,M,AF,AG,AI')
+diar_bas.columns = ['fecha','Depósitos en moneda extranjera en el BCRA', 
+                    'Depósitos del gobierno en pesos', 
+                    'Depósitos del gobierno en usd', 
+                    'TC']
+diar_bas.set_index('fecha', inplace=True)
+diar_bas = diar_bas[(diar_bas.index > pd.Timestamp('2022-12-29')) & (diar_bas.index <= hasta)]
+Encajes = pd.DataFrame()
+Encajes['Encajes'] = diar_bas['Depósitos en moneda extranjera en el BCRA'] / diar_bas['TC']
+
+# Descargar oro (GC=F)
+oro = yf.download("GC=F", start="2022-12-30")[['Close']]
+# Descargar tipo de cambio USD/CNY (Yahoo usa "CNY=X" para USD -> CNY)
+yuan = yf.download("CNY=X", start="2022-12-30")[['Close']]
+# Unir los dos DataFrames por fecha
+ajuste = oro.join(yuan, how='inner')  # O how='outer' si querés mantener todas las fechas
+# Resetear índice si querés que la fecha quede como columna
+ajuste = ajuste.reset_index()
+ajuste = ajuste.rename(columns={'Date':'fecha'})
+ajuste.set_index('fecha', inplace=True)
+ajuste.columns = ajuste.columns.get_level_values(-1)
+ajuste = ajuste.rename(columns={'GC=F':'oro_usd', 'CNY=X':'yuan'})
+ajuste['ajuste_oro'] = (ajuste.loc['2025-01-31']['oro_usd']-ajuste['oro_usd'])*1.98
+
+RIN = Reservas_Brutas.join(Encajes, how='inner').join(ajuste, how='inner')
+RIN['RIN'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-130000/RIN['yuan']
+RIN['RIN_pp'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-130000/RIN['yuan']+RIN['ajuste_oro']
+RIN['RIN_va'] = RIN['RIN']-RIN.loc['2024-12-30']['RIN']
+RIN['RIN_pp_va'] = RIN['RIN_pp']-RIN.loc['2024-12-30']['RIN_pp']
+RIN = RIN[['RIN','RIN_pp','RIN_va','RIN_va_pp']]
+RIN = RIN[RIN.index>'2022-12-30']
+RIN = RIN[::-1]
+RIN.to_csv('Reservas_Netas.csv', index=True)
