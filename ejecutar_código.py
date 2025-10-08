@@ -19,8 +19,8 @@ import matplotlib.lines as mlines
 from datetime import datetime, timedelta
 
 # Definir la fecha de hoy automáticamente
-#hoy = (datetime.today()).strftime('%Y-%m-%d')
-hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
+hoy = (datetime.today()).strftime('%Y-%m-%d')
+#hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 tickers_adrs = ['BBAR', 'BMA', 'CEPU', 'CRESY', 'EDN', 'GGAL', 'IRS','LOMA',
                 'PAM', 'SUPV', 'TEO', 'TGS', 'TS', 'TX', 'YPF']
@@ -102,6 +102,7 @@ Variacion_Acumulada = Variacion_Acumulada.round(1)
 Variacion_Acumulada = Variacion_Acumulada[::-1]
 
 Variacion_Acumulada.to_csv('Variación_Acumulada_RRII_Factores_Explicación.csv',index=True)
+
 
 
 
