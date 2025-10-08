@@ -22,11 +22,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install yfinance pandas matplotlib numpy xlrd openpyxl
-
-      - name: Instalar dependencias
-        run: |
-          pip install -r requirements.txt
+          pip install yfinance pandas matplotlib numpy xlrd openpyxl requests
 
       - name: Ejecutar script
         run: python reservas_obligaciones_ooii.py
