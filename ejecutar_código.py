@@ -80,7 +80,7 @@ Tasas.columns = ['fecha','TAMAR','Préstamos personales','Adelantos en cuenta co
 Tasas.set_index('fecha', inplace=True)
 Tasas = Tasas[Tasas.index>'2024-05-31']
 Tasas = Tasas[::-1]
-Tasas.to_csv('Tasas.csv', index=True)
+Tasas.to_csv('Principales_Tasas_de_Interés.csv', index=True)
 
 
 
@@ -103,6 +103,7 @@ Variacion_Acumulada = Variacion_Acumulada.round(1)
 Variacion_Acumulada = Variacion_Acumulada[::-1]
 
 Variacion_Acumulada.to_csv('Variación_Acumulada_RRII_Factores_Explicación.csv',index=True)
+
 
 
 
