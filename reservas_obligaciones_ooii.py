@@ -22,7 +22,7 @@ id = 1
 url = f"https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/{id}"
 hasta = pd.Timestamp.today().strftime('%Y-%m-%d')
 params = {"desde": "2022-12-30", "hasta": hasta}
-response = requests.get(url, params=params)
+response = requests.get(url, params=params, verify=False)
 
 if response.status_code == 200:
     data = response.json()
@@ -95,7 +95,7 @@ Reservas_Brutas.loc[Reservas_Brutas.index > '2025-04-14', 'Reservas_Brutas'] -= 
 Reservas_Brutas.loc[Reservas_Brutas.index > '2025-08-01', 'Reservas_Brutas'] -= 2072.8
 
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/Serieanual.xls"
-response = requests.get(url)
+response = requests.get(url, verify=False)
 
 balance_23 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2023',skiprows=3).iloc[[74,107]]
 balance_23 = balance_23.T
@@ -139,10 +139,9 @@ Reservas_Brutas['obligaciones_ooii'] = obligaciones_ooii['obligaciones_ooii'].re
 
 Reservas_Brutas.loc[Reservas_Brutas.index<'2023-01-07','obligaciones_ooii'] = 3131.577122
 
-
 hasta = Reservas_Brutas.index[-1]
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/diar_bas.xls"
-response = requests.get(url)
+response = requests.get(url, verify=False)
 diar_bas = pd.read_excel(BytesIO(response.content), 
                          sheet_name='Serie_diaria', 
                          skiprows=26, 
@@ -178,4 +177,5 @@ RIN['RIN_pp_va'] = RIN['RIN_pp']-RIN.loc['2024-12-30']['RIN_pp']
 RIN = RIN[['RIN','RIN_pp','RIN_va','RIN_pp_va']]
 RIN = RIN[RIN.index>'2022-12-30']
 RIN = RIN[::-1]
+
 RIN.to_csv('Reservas_Netas.csv', index=True)
