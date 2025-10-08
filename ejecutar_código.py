@@ -2,7 +2,6 @@ import yfinance as yf
 import requests
 import pandas as pd
 import numpy as np
-from datetime import timedelta
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 from matplotlib.offsetbox import OffsetImage, AnnotationBbox
@@ -10,17 +9,17 @@ import matplotlib.patches as mpatches
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
 from matplotlib.lines import Line2D
-from datetime import datetime
 import re
 from matplotlib.dates import date2num
 from matplotlib.ticker import FixedLocator
-import datetime
 from io import BytesIO
 from dateutil.relativedelta import relativedelta
 from pandas.tseries.offsets import MonthEnd
 import matplotlib.lines as mlines
+from datetime import datetime, timedelta
 
 # Definir la fecha de hoy automáticamente
+#hoy = (datetime.today()).strftime('%Y-%m-%d')
 hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 tickers_adrs = ['BBAR', 'BMA', 'CEPU', 'CRESY', 'EDN', 'GGAL', 'IRS','LOMA',
@@ -103,6 +102,7 @@ Variacion_Acumulada = Variacion_Acumulada.round(1)
 Variacion_Acumulada = Variacion_Acumulada[::-1]
 
 Variacion_Acumulada.to_csv('Variación_Acumulada_RRII_Factores_Explicación.csv',index=True)
+
 
 
 
