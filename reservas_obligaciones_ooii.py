@@ -8,7 +8,6 @@ from io import BytesIO
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.dates as mdates
-import seaborn as sns
 import matplotlib.ticker as ticker
 from matplotlib.lines import Line2D
 from dateutil.relativedelta import relativedelta
@@ -179,3 +178,4 @@ RIN = RIN[RIN.index>'2022-12-30']
 RIN = RIN[::-1]
 
 RIN.to_csv('Reservas_Netas.csv', index=True)
+
