@@ -176,6 +176,9 @@ RIN['RIN_pp_va'] = RIN['RIN_pp']-RIN.loc['2024-12-30']['RIN_pp']
 RIN = RIN[['RIN','RIN_pp','RIN_va','RIN_pp_va']]
 RIN = RIN[RIN.index>'2022-12-30']
 RIN = RIN[::-1]
+RIN = RIN.round(2)
+RIN.columns = ['RIN','RIN a precios 31/01/25','RIN var acum respecto al 30/12/24','RIN var acum respecto al 30/12/25 a precios 31/01/25']
 
 RIN.to_csv('Reservas_Netas.csv', index=True)
+
 
