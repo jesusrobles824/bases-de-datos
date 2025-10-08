@@ -286,10 +286,11 @@ Prestamos_pesos.to_csv('Préstamos_en_pesos.csv', index=True)
 
 Prestamos_usd = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,J,K,L,M,N,O,P,Q,V',skiprows=8)
 Prestamos_usd.columns = ['fecha','Adelantos','Documentos','Hipotecarios','Prendarios','Personales','Tarjetas','Otros','TOTAL','Tipo de serie']
-Prestamos_usd = Prestamos_pesos.loc[Prestamos_pesos['Tipo de serie'] == 'D']
-Prestamos_usd = Prestamos_pesos.drop(columns=['Tipo de serie'])
+Prestamos_usd = Prestamos_usd.loc[Prestamos_usd['Tipo de serie'] == 'D']
+Prestamos_usd = Prestamos_usd.drop(columns=['Tipo de serie'])
 Prestamos_usd.set_index('fecha', inplace=True)
-Prestamos_usd = Prestamos_pesos[::-1]
+Prestamos_usd = Prestamos_usd[::-1]
 Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
+
 
 
