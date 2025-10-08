@@ -73,9 +73,9 @@ diar_bas.to_csv('Depósitos_tesoro.csv', index=True)
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/series.xlsm"
 response = requests.get(url, verify=False)
 
-Tasas = pd.read_excel(BytesIO(response.content), sheet_name='TASAS DE MERCADO', skiprows=8, usecols='A,I,R,S,V,X')
+Tasas = pd.read_excel(BytesIO(response.content), sheet_name='TASAS DE MERCADO', skiprows=8, usecols='A,B,I,L,O,R,S,V,X')
 
-Tasas.columns = ['fecha','TAMAR','Préstamos personales','Adelantos en cuenta corriente','Call en Pesos','Repo a 1 día (excl. BCRA)']
+Tasas.columns = ['fecha','Plazo fijo','TAMAR','BADLAR','TM20','Préstamos personales','Adelantos en cuenta corriente','Call en Pesos','Pases']
 Tasas.set_index('fecha', inplace=True)
 Tasas = Tasas[Tasas.index>'2024-05-31']
 Tasas = Tasas[::-1]
@@ -293,6 +293,7 @@ Prestamos_usd.set_index('fecha', inplace=True)
 Prestamos_usd = Prestamos_usd[::-1]
 Prestamos_usd = Prestamos_usd.round(0)
 Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
+
 
 
 
