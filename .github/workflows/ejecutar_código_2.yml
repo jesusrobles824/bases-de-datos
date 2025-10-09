@@ -9,6 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
       # 1️⃣ Checkout repo A
       - name: Checkout repo A
         uses: actions/checkout@v3
@@ -38,22 +39,25 @@ jobs:
       # 6️⃣ Guardar CSV en repo A
       - name: Guardar csv en repo A
         run: |
-          git add ADRs_Precios.csv ADRs_variacion_porcentual_diaria.csv Depósitos_tesoro_variación_diaria.csv Depósitos_tesoro.csv Principales_Tasas_de_Interés.csv Variación_RRII_Factores_Explicación.csv Variación_Acumulada_RRII_Factores_Explicación.csv Reservas_Netas.csv Préstamos_en_pesos.csv Préstamos_en_usd.csv Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv  
-          git commit -m "Auto-update: resultados $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
+          git add *.csv
+          git commit -m "Auto-update CSV $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
           git push
 
-      # 7️⃣ Checkout repo B usando token seguro
-      - name: Checkout repo B
-        uses: actions/checkout@v3
-        with:
-          repository: jesusrobles824/Variables-macroeconomicas
-          token: ${{ secrets.REPO_B_TOKEN }}
-          path: repoB
+      # 7️⃣ Clonar repo B manualmente usando token
+      - name: Clonar repo B
+        run: |
+          rm -rf repoB || true
+          git clone https://x-access-token:${{ secrets.REPO_B_TOKEN }}@github.com/jesusrobles824/Variables-macroeconomicas.git repoB
 
-      # 8️⃣ Copiar CSV generados al repo B y hacer push
-      - name: Copiar CSV al repo B y push
+      # 8️⃣ Copiar CSV a repo B
+      - name: Copiar CSV al repo B
         run: |
           cp *.csv repoB/
+          ls -l repoB/   # Verificar que los archivos están allí
+
+      # 9️⃣ Commit y push en repo B
+      - name: Commit y push en repo B
+        run: |
           cd repoB
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
