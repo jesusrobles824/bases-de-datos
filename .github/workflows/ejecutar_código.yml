@@ -32,6 +32,6 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
       - name: Guardar csv
         run: |
-          git add ADRs_Precios.csv ADRs_variacion_porcentual_diaria.csv Depósitos_tesoro_variación_diaria.csv Depósitos_tesoro.csv Principales_Tasas_de_Interés.csv Variación_RRII_Factores_Explicación.csv Variación_Acumulada_RRII_Factores_Explicación.csv Reservas_Netas.csv Préstamos_en_pesos.csv Préstamos_en_usd.csv  
+          git add ADRs_Precios.csv ADRs_variacion_porcentual_diaria.csv Depósitos_tesoro_variación_diaria.csv Depósitos_tesoro.csv Principales_Tasas_de_Interés.csv Variación_RRII_Factores_Explicación.csv Variación_Acumulada_RRII_Factores_Explicación.csv Reservas_Netas.csv Préstamos_en_pesos.csv Préstamos_en_usd.csv Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv  
           git commit -m "Auto-update: resultados $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
           git push
