@@ -9,49 +9,54 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # 1️⃣ Checkout repo A
       - name: Checkout repo A
         uses: actions/checkout@v3
 
+      # 2️⃣ Set up Python
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
 
+      # 3️⃣ Instalar dependencias
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install yfinance pandas matplotlib numpy xlrd openpyxl
 
+      # 4️⃣ Ejecutar script Python
       - name: Run script
         run: python ejecutar_código.py
 
+      # 5️⃣ Configurar git en repo A
       - name: Configurar git en repo A
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      # 6️⃣ Guardar CSV en repo A
       - name: Guardar csv en repo A
         run: |
           git add ADRs_Precios.csv ADRs_variacion_porcentual_diaria.csv Depósitos_tesoro_variación_diaria.csv Depósitos_tesoro.csv Principales_Tasas_de_Interés.csv Variación_RRII_Factores_Explicación.csv Variación_Acumulada_RRII_Factores_Explicación.csv Reservas_Netas.csv Préstamos_en_pesos.csv Préstamos_en_usd.csv Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv  
           git commit -m "Auto-update: resultados $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
           git push
 
-      - name: Exportar CSV a repo B
+      # 7️⃣ Checkout repo B usando token seguro
+      - name: Checkout repo B
+        uses: actions/checkout@v3
+        with:
+          repository: jesusrobles824/Variables-macroeconomicas
+          token: ${{ secrets.REPO_B_TOKEN }}
+          path: repoB
+
+      # 8️⃣ Copiar CSV generados al repo B y hacer push
+      - name: Copiar CSV al repo B y push
         run: |
-          # Clonar repo B usando token
-          git clone https://x-access-token:${{ secrets.REPO_B_TOKEN }}@github.com/jesusrobles824/Variables-macroeconomicas.git
-          
-          # Copiar todos los CSV generados al repo B
-          cp *.csv Variables-macroeconomicas/
-          
-          # Entrar en el repo B
-          cd Variables-macroeconomicas
-          
-          # Configurar usuario para commits
+          cp *.csv repoB/
+          cd repoB
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Agregar, commit y push
           git add .
           git commit -m "Auto-update CSV desde repo A: $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
           git push
