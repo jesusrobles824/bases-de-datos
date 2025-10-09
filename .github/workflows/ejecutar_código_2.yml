@@ -1,4 +1,4 @@
-name: ejecutar código
+name: ejecutar código 2
 
 on:
   schedule:
@@ -9,7 +9,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
+      - name: Checkout repo A
         uses: actions/checkout@v3
 
       - name: Set up Python
@@ -25,12 +25,12 @@ jobs:
       - name: Run script
         run: python ejecutar_código.py
 
-      - name: Configurar git
+      - name: Configurar git en repo A
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Guardar csv
+      - name: Guardar csv en repo A
         run: |
           git add ADRs_Precios.csv ADRs_variacion_porcentual_diaria.csv Depósitos_tesoro_variación_diaria.csv Depósitos_tesoro.csv Principales_Tasas_de_Interés.csv Variación_RRII_Factores_Explicación.csv Variación_Acumulada_RRII_Factores_Explicación.csv Reservas_Netas.csv Préstamos_en_pesos.csv Préstamos_en_usd.csv Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv  
           git commit -m "Auto-update: resultados $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
@@ -38,7 +38,7 @@ jobs:
 
       - name: Exportar CSV a repo B
         run: |
-          # Clonar el repo destino
+          # Clonar repo B usando token
           git clone https://x-access-token:${{ secrets.REPO_B_TOKEN }}@github.com/jesusrobles824/Variables-macroeconomicas.git
           
           # Copiar todos los CSV generados al repo B
@@ -51,7 +51,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Agregar los archivos, hacer commit y push
+          # Agregar, commit y push
           git add .
           git commit -m "Auto-update CSV desde repo A: $(date +'%Y-%m-%d %H:%M')" || echo "No hay cambios"
           git push
