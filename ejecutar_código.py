@@ -19,14 +19,12 @@ import matplotlib.lines as mlines
 from datetime import datetime, timedelta
 
 # Definir la fecha de hoy automáticamente
-#hoy = (datetime.today()).strftime('%Y-%m-%d')
-hoy = (datetime.today() + timedelta(days=1)).strftime('%Y-%m-%d')
 
 tickers_adrs = ['BBAR', 'BMA', 'CEPU', 'CRESY', 'EDN', 'GGAL', 'IRS','LOMA',
                 'PAM', 'SUPV', 'TEO', 'TGS', 'TS', 'TX', 'YPF']
 
 # Descargar datos históricos de los ADRs y el Merval
-adrs = yf.download(tickers_adrs, start='2010-01-01', end=hoy)['Close']
+adrs = yf.download(tickers_adrs, start='2010-01-01')['Close']
 adrs.columns.name = None  # Correcto
 adrs.index.name = 'fecha'  # Correcto
 adrs = adrs.round(2)
@@ -301,6 +299,7 @@ Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
 Variacion_Reservas = Variacion_Reservas[['OOII','Otras Operaciones del Sector Público']]
 diar_bas_var = diar_bas_var.join(Variacion_Reservas, how='inner')
 diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv', index=True)
+
 
 
 
