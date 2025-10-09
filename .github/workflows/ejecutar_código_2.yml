@@ -1,26 +1,42 @@
-name: Push CSV to another repository
+name: Exportar CSV a repo B
 
 on:
   schedule:
-    - cron: "0 23 * * *"
+    - cron: "0 23 * * *"   # Todos los días a las 20:00 de Argentina (23:00 UTC)
   workflow_dispatch:
 
 jobs:
   push_csv:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source repository
+
+      # 1️⃣ Checkout repo A (donde está el workflow y los scripts)
+      - name: Checkout repo A
         uses: actions/checkout@v4
 
-      - name: Run Python script to generate CSVs
+      # 2️⃣ Configurar Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      # 3️⃣ Instalar dependencias necesarias
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yfinance pandas matplotlib numpy xlrd openpyxl
+
+      # 4️⃣ Ejecutar script Python que genera los CSV
+      - name: Run Python script
         run: python ejecutar_código.py
 
+      # 5️⃣ Push CSV a repo B usando acción especializada
       - name: Push CSV to target repository
         uses: cpina/github-action-push-to-another-repository@main
         env:
-          API_TOKEN_GITHUB: ${{ secrets.REPO_B_TOKEN }}
+          API_TOKEN_GITHUB: ${{ secrets.REPO_B_TOKEN }}  # Tu PAT fine-grained
         with:
-          source-directory: '*.csv'   # Todos los CSV generados
+          source-directory: '*.csv'                       # Todos los CSV generados
           destination-repo: 'jesusrobles824/Variables-macroeconomicas'
           target-branch: 'main'
           commit-message: 'Automated: Update CSV data'
