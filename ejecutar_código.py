@@ -75,10 +75,11 @@ response = requests.get(url, verify=False)
 
 Tasas = pd.read_excel(BytesIO(response.content), sheet_name='TASAS DE MERCADO', skiprows=8, usecols='A,B,I,L,O,R,S,V,X')
 
-Tasas.columns = ['fecha','Plazo fijo','TAMAR','BADLAR','TM20','Préstamos personales','Adelantos en cuenta corriente','Call en Pesos','Pases']
+Tasas.columns = ['fecha','Plazo fijo','TAMAR','BADLAR','TM20','Préstamos personales','Adelantos en cuenta corriente','Call en Pesos','Repo a 1 día (excl. BCRA)']
 Tasas.set_index('fecha', inplace=True)
 Tasas = Tasas[Tasas.index>'2024-05-31']
 Tasas = Tasas[::-1]
+Tasas = Tasas.round(2)
 Tasas.to_csv('Principales_Tasas_de_Interés.csv', index=True)
 
 
@@ -300,6 +301,7 @@ Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
 Variacion_Reservas = Variacion_Reservas[['OOII','Otras Operaciones del Sector Público']]
 diar_bas_var = diar_bas_var.join(Variacion_Reservas, how='inner')
 diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicación.csv', index=True)
+
 
 
 
