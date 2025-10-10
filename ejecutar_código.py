@@ -336,7 +336,10 @@ IED = IED[['Aportes netos de capital',
 IED.columns = ['Aportes netos de capital','Fusiones y adquisiciones','Reinversión de utilidades','Transacciones de deuda','TOTAL']
 for col in IED.columns:
    IED[col] = IED[col] / IPC_trimestral['IPC']
+IED = IED.round(2)
+IED = IED[::-1]
 IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
