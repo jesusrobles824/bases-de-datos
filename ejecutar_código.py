@@ -305,40 +305,41 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 
 
 # Definir fechas como strings en formato YYYY-MM-DD
-start = "2017-01-01"
-end = "2025-08-01"
+#start = "2017-01-01"
+#end = "2025-08-01"
 # Descargar datos del IPC ajustado estacionalmente (CPIAUCSL) de FRED
-IPC = web.DataReader("CPIAUCSL", "fred", start, end)
-IPC.columns = ['IPC']
-IPC.index.name='fecha'
-IPC.index = pd.to_datetime(IPC.index)
-IPC = IPC / IPC.loc['2025-08-01']
-IPC = IPC[IPC.index<'2025-04-01']
-IPC_trimestral = IPC.resample('Q').mean()
-IPC_trimestral.index = pd.period_range(start='2017Q1', end='2025Q1', freq='Q')
-IPC_trimestral.index.name = 'Trimestre'
+#IPC = web.DataReader("CPIAUCSL", "fred", start, end)
+#IPC.columns = ['IPC']
+#IPC.index.name='fecha'
+#IPC.index = pd.to_datetime(IPC.index)
+#IPC = IPC / IPC.loc['2025-08-01']
+#IPC = IPC[IPC.index<'2025-04-01']
+#IPC_trimestral = IPC.resample('Q').mean()
+#IPC_trimestral.index = pd.period_range(start='2017Q1', end='2025Q1', freq='Q')
+#IPC_trimestral.index.name = 'Trimestre'
 
-url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/anexo-informe-inversion-extranjera-directa.xlsx"
-response = requests.get(url, verify=False)
-IED = pd.read_excel(BytesIO(response.content), sheet_name='Cuadro 4', skiprows=9, usecols='A:G')
-IED.set_index('Periodo', inplace=True)
-IED = IED.drop(range(2017, 2026), errors='ignore')  
-IED.index = pd.period_range(start='2017Q1', end='2025Q1', freq='Q')
-IED.index.name = 'Trimestre'
-IED['Reinversión de utilidades']=IED['Renta de IED']+IED['Distribución de utilidades']
-IED = IED.drop(columns=['Renta de IED','Distribución de utilidades'])
-IED = IED.rename(columns={'Deuda de IED':'Transacciones de deuda'})
-IED = IED[['Aportes netos de capital',
-           'Fusiones y adquisiciones',
-           'Reinversión de utilidades',
-           'Transacciones de deuda',
-           'Total de Transacciones ']]
-IED.columns = ['Aportes netos de capital','Fusiones y adquisiciones','Reinversión de utilidades','Transacciones de deuda','TOTAL']
-for col in IED.columns:
-   IED[col] = IED[col] / IPC_trimestral['IPC']
-IED = IED.round(2)
-IED = IED[::-1]
-IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+#url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/anexo-informe-inversion-extranjera-directa.xlsx"
+#response = requests.get(url, verify=False)
+#IED = pd.read_excel(BytesIO(response.content), sheet_name='Cuadro 4', skiprows=9, usecols='A:G')
+#IED.set_index('Periodo', inplace=True)
+#IED = IED.drop(range(2017, 2026), errors='ignore')  
+#IED.index = pd.period_range(start='2017Q1', end='2025Q1', freq='Q')
+#IED.index.name = 'Trimestre'
+#IED['Reinversión de utilidades']=IED['Renta de IED']+IED['Distribución de utilidades']
+#IED = IED.drop(columns=['Renta de IED','Distribución de utilidades'])
+#IED = IED.rename(columns={'Deuda de IED':'Transacciones de deuda'})
+#IED = IED[['Aportes netos de capital',
+#           'Fusiones y adquisiciones',
+#           'Reinversión de utilidades',
+#           'Transacciones de deuda',
+#           'Total de Transacciones ']]
+#IED.columns = ['Aportes netos de capital','Fusiones y adquisiciones','Reinversión de utilidades','Transacciones de deuda','TOTAL']
+#for col in IED.columns:
+#   IED[col] = IED[col] / IPC_trimestral['IPC']
+#IED = IED.round(2)
+#IED = IED[::-1]
+#IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
