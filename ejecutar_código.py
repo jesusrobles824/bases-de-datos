@@ -255,7 +255,7 @@ ajuste = ajuste.rename(columns={'Date':'fecha'})
 ajuste.set_index('fecha', inplace=True)
 ajuste.columns = ajuste.columns.get_level_values(-1)
 ajuste = ajuste.rename(columns={'GC=F':'oro_usd', 'CNY=X':'yuan'})
-ajuste['ajuste_oro'] = (ajuste['oro_usd']-ajuste.loc['2025-01-31']['oro_usd']-)*1.98
+ajuste['ajuste_oro'] = (ajuste['oro_usd']-ajuste.loc['2025-01-31']['oro_usd'])*1.98
 
 RIN = Reservas_Brutas.join(Encajes, how='inner').join(ajuste, how='inner')
 RIN['RIN'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-130000/RIN['yuan']-RIN['obligaciones_ooii']
@@ -339,6 +339,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
