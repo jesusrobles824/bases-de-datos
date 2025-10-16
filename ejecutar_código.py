@@ -265,9 +265,8 @@ RIN['RIN_pp_va'] = RIN['RIN_pp']-RIN.loc['2024-12-30']['RIN_pp']
 RIN = RIN[['RIN','RIN_pp','RIN_va','RIN_pp_va']]
 RIN = RIN[RIN.index>'2022-12-30']
 RIN = RIN[::-1]
-RIN = RIN.round(2)
 RIN.columns = ['RIN','RIN a precios 31/01/25','RIN variación acumulada respecto al 30/12/24','RIN variación acumulada respecto al 30/12/25 a precios 31/01/25']
-
+RIN = RIN.round(2)
 RIN.to_csv('Reservas_Netas.csv', index=True)
 
 
@@ -339,6 +338,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
