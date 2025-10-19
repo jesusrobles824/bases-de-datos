@@ -283,6 +283,8 @@ Prestamos_pesos = Prestamos_pesos.loc[Prestamos_pesos['Tipo de serie'] == 'D']
 Prestamos_pesos = Prestamos_pesos.drop(columns=['Tipo de serie'])
 Prestamos_pesos.set_index('fecha', inplace=True)
 Prestamos_pesos = Prestamos_pesos[::-1]
+for col in Prestamos_pesos.columns:
+    Prestamos_pesos[col] = pd.to_numeric(Prestamos_pesos[col], errors='coerce')
 Prestamos_pesos = Prestamos_pesos.round(0)
 Prestamos_pesos.to_csv('Préstamos_en_pesos.csv', index=True)
 
@@ -292,6 +294,8 @@ Prestamos_usd = Prestamos_usd.loc[Prestamos_usd['Tipo de serie'] == 'D']
 Prestamos_usd = Prestamos_usd.drop(columns=['Tipo de serie'])
 Prestamos_usd.set_index('fecha', inplace=True)
 Prestamos_usd = Prestamos_usd[::-1]
+for col in Prestamos_usd.columns:
+    Prestamos_usd[col] = pd.to_numeric(Prestamos_usd[col], errors='coerce')
 Prestamos_usd = Prestamos_usd.round(0)
 Prestamos_usd.to_csv('Préstamos_en_usd.csv', index=True)
 
@@ -340,6 +344,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
