@@ -297,6 +297,24 @@ for col in Prestamos_usd.columns:
     Prestamos_usd[col] = pd.to_numeric(Prestamos_usd[col], errors='coerce').round(0).astype('Int64')
 Prestamos_usd.to_csv('Préstamos_usd_sector_privado_en_millones_por_tipo.csv', index=True)
 
+Depositos = pd.read_excel(BytesIO(response.content),sheet_name='DEPOSITOS',usecols='A,AA,AE',skiprows=8)
+Depositos.columns = ['fecha','Depósitos en dólares','Tipo de serie']
+Depositos = Depositos.loc[Depositos['Tipo de serie'] == 'D']
+Depositos = Depositos.drop(columns=['Tipo de serie'])
+Depositos.set_index('fecha', inplace=True)
+
+Prestamos = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,Q,V',skiprows=8)
+Prestamos.columns = ['fecha','Préstamos en dólares','Tipo de serie']
+Prestamos = Prestamos.loc[Prestamos['Tipo de serie'] == 'D']
+Prestamos = Prestamos.drop(columns=['Tipo de serie'])
+Prestamos.set_index('fecha', inplace=True)
+
+Prestamos_Depositos_usd = Prestamos.join(Depositos, how='inner')
+Prestamos_Depositos_usd = Prestamos_Depositos_usd[::-1]
+for col in Prestamos_Depositos_usd.columns:
+    Prestamos_Depositos_usd[col] = pd.to_numeric(Prestamos_Depositos_usd[col], errors='coerce').round(0).astype('Int64')
+Prestamos_Depositos_usd.to_csv('Prestamos_Depositos_usd_sector_privado_en_millones.csv',index=True)
+
 
 
 
@@ -342,6 +360,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
