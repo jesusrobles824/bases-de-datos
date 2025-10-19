@@ -284,8 +284,7 @@ Prestamos_pesos = Prestamos_pesos.drop(columns=['Tipo de serie'])
 Prestamos_pesos.set_index('fecha', inplace=True)
 Prestamos_pesos = Prestamos_pesos[::-1]
 for col in Prestamos_pesos.columns:
-    Prestamos_pesos[col] = pd.to_numeric(Prestamos_pesos[col], errors='coerce')
-Prestamos_pesos = Prestamos_pesos.round(0)
+    Prestamos_pesos[col] = pd.to_numeric(Prestamos_pesos[col], errors='coerce').round(0).astype('Int64')
 Prestamos_pesos.to_csv('Préstamos_en_pesos.csv', index=True)
 
 Prestamos_usd = pd.read_excel(BytesIO(response.content),sheet_name='PRESTAMOS',usecols='A,J,K,L,M,N,O,P,Q,V',skiprows=8)
@@ -344,6 +343,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
