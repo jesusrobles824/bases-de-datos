@@ -110,7 +110,7 @@ id = 1
 url = f"https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/{id}"
 hasta = pd.Timestamp.today().strftime('%Y-%m-%d')
 params = {"desde": "2022-12-30", "hasta": hasta}
-response = requests.get(url, params=params)
+response = requests.get(url, params=params, verify=False)
 
 if response.status_code == 200:
     data = response.json()
@@ -185,7 +185,7 @@ ajuste_rango_interp = ajuste_rango.interpolate(method='linear')
 Reservas_Brutas.loc[mask, 'Pases'] = ajuste_rango_interp
 
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/Serieanual.xls"
-response = requests.get(url)
+response = requests.get(url, verify=False)
 
 balance_23 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2023',skiprows=3).iloc[[74,107]]
 balance_23 = balance_23.T
@@ -231,7 +231,7 @@ Reservas_Brutas.loc[Reservas_Brutas.index<'2023-01-07','Obligaciones OOII'] = 31
 
 hasta = Reservas_Brutas.index[-1]
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/diar_bas.xls"
-response = requests.get(url)
+response = requests.get(url, verify=False)
 diar_bas = pd.read_excel(BytesIO(response.content), 
                          sheet_name='Serie_diaria', 
                          skiprows=26, 
@@ -384,6 +384,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
