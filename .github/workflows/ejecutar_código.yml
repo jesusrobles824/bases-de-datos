@@ -20,7 +20,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install yfinance pandas matplotlib numpy xlrd openpyxl pandas-datareader
+          pip install yfinance pandas matplotlib numpy xlrd openpyxl pandas-datareader imf-reader
 
       - name: Run script
         run: python ejecutar_código.py
