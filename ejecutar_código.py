@@ -285,7 +285,7 @@ RIN.loc[RIN.index > '2025-04-14', 'Swap USA'] = 2537.59
 RIN['Swap China'] = 130000 / RIN['TC yuan']
 
 RIN['RIN'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']-RIN['Desembolsos FMI']
-RIN['RIN precios 31/1'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']-RIN['Desembolsos FMI']+RIN['Ajuste oro']+RIN['Ajuste yuan']+RIN['Ajuste DEGs']
+RIN['RIN precios 31/01'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']-RIN['Desembolsos FMI']+RIN['Ajuste oro']+RIN['Ajuste yuan']+RIN['Ajuste DEGs']
 RIN['RIN (incluye fmi)'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']
 RIN = RIN[['RIN precios 31/01','RIN','Encajes','Swap China','Swap USA','Pases','Obligaciones OOII','Desembolsos FMI','Ajuste oro','Ajuste yuan','Ajuste DEGs']]
 RIN = RIN[::-1]
@@ -384,6 +384,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
