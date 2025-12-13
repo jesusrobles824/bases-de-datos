@@ -18,6 +18,7 @@ from pandas.tseries.offsets import MonthEnd
 import matplotlib.lines as mlines
 from datetime import datetime, timedelta
 from pandas_datareader import data as web
+from imf_reader import sdr
 
 # Definir la fecha de hoy automáticamente
 
@@ -105,21 +106,20 @@ Variacion_Acumulada.to_csv('Variación_Acumulada_RRII_Factores_Explicación.csv'
 
 
 
-
 id = 1
 url = f"https://api.bcra.gob.ar/estadisticas/v3.0/monetarias/{id}"
 hasta = pd.Timestamp.today().strftime('%Y-%m-%d')
 params = {"desde": "2022-12-30", "hasta": hasta}
-response = requests.get(url, params=params, verify=False)
+response = requests.get(url, params=params)
 
 if response.status_code == 200:
     data = response.json()
     Reservas_Brutas = pd.DataFrame(data['results'])[['fecha', 'valor']]
-    Reservas_Brutas = Reservas_Brutas.rename(columns={'valor': 'Reservas_Brutas'})
+    Reservas_Brutas = Reservas_Brutas.rename(columns={'valor': 'Reservas Brutas'})
     Reservas_Brutas['fecha'] = pd.to_datetime(Reservas_Brutas['fecha'])
     Reservas_Brutas.set_index('fecha', inplace=True)
     Reservas_Brutas = Reservas_Brutas[::-1]  # orden cronológico ascendente
-    def cortos(fecha):
+    def Pases(fecha):
         if fecha.year == 2022 and fecha.month == 12:
             return 1852.97 
         elif fecha.year == 2023 and fecha.month == 1:
@@ -169,23 +169,23 @@ if response.status_code == 200:
         else:
             return None
     ultimos_dias = Reservas_Brutas.groupby([Reservas_Brutas.index.year, Reservas_Brutas.index.month]).tail(1)
-    Reservas_Brutas['Cortos'] = np.nan
+    Reservas_Brutas['Pases'] = np.nan
     for fecha in ultimos_dias.index:
-        ajuste = cortos(fecha)
+        ajuste = Pases(fecha)
         if ajuste is not None:
-            Reservas_Brutas.loc[fecha, 'Cortos'] = ajuste
+            Reservas_Brutas.loc[fecha, 'Pases'] = ajuste
 
-Reservas_Brutas.loc[Reservas_Brutas.index>'2025-10-31', 'Cortos'] = 3294.59
-Reservas_Brutas['Cortos'] = pd.to_numeric(Reservas_Brutas['Cortos'], errors='coerce')
+Reservas_Brutas.loc[Reservas_Brutas.index>'2025-10-31', 'Pases'] = 3294.59
+Reservas_Brutas['Pases'] = pd.to_numeric(Reservas_Brutas['Pases'], errors='coerce')
 ultimo1 = Reservas_Brutas.loc['2022-12'].index.max()
 ultimo2 = Reservas_Brutas.loc['2025-10'].index.max()
 mask = (Reservas_Brutas.index >= ultimo1) & (Reservas_Brutas.index <= ultimo2)
-ajuste_rango = Reservas_Brutas.loc[mask, 'Cortos'].copy()
+ajuste_rango = Reservas_Brutas.loc[mask, 'Pases'].copy()
 ajuste_rango_interp = ajuste_rango.interpolate(method='linear')
-Reservas_Brutas.loc[mask, 'Cortos'] = ajuste_rango_interp
+Reservas_Brutas.loc[mask, 'Pases'] = ajuste_rango_interp
 
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/Serieanual.xls"
-response = requests.get(url, verify=False)
+response = requests.get(url)
 
 balance_23 = pd.read_excel(BytesIO(response.content), sheet_name='serie semanal 2023',skiprows=3).iloc[[74,107]]
 balance_23 = balance_23.T
@@ -223,15 +223,15 @@ balance_25 = balance_25[['obligaciones_ooii']]
 obligaciones_ooii = pd.concat([balance_23, balance_24, balance_25])
 obligaciones_ooii.to_excel('obligaciones_ooii.xlsx',index=True)
 
-Reservas_Brutas['obligaciones_ooii'] = obligaciones_ooii['obligaciones_ooii'].reindex(
+Reservas_Brutas['Obligaciones OOII'] = obligaciones_ooii['obligaciones_ooii'].reindex(
     Reservas_Brutas.index, method='ffill'
 )
 
-Reservas_Brutas.loc[Reservas_Brutas.index<'2023-01-07','obligaciones_ooii'] = 3131.577122
+Reservas_Brutas.loc[Reservas_Brutas.index<'2023-01-07','Obligaciones OOII'] = 3131.577122
 
 hasta = Reservas_Brutas.index[-1]
 url = "https://www.bcra.gob.ar/Pdfs/PublicacionesEstadisticas/diar_bas.xls"
-response = requests.get(url, verify=False)
+response = requests.get(url)
 diar_bas = pd.read_excel(BytesIO(response.content), 
                          sheet_name='Serie_diaria', 
                          skiprows=26, 
@@ -256,22 +256,38 @@ ajuste = ajuste.reset_index()
 ajuste = ajuste.rename(columns={'Date':'fecha'})
 ajuste.set_index('fecha', inplace=True)
 ajuste.columns = ajuste.columns.get_level_values(-1)
-ajuste = ajuste.rename(columns={'GC=F':'oro_usd', 'CNY=X':'yuan'})
-ajuste['ajuste_oro'] = (ajuste.loc['2025-01-31']['oro_usd'])*1.98-ajuste['oro_usd']*1.98
-ajuste['ajuste_yuan'] = 35000/ajuste['yuan'] - 35000/(ajuste.loc['2025-01-31']['yuan']) 
+ajuste = ajuste.rename(columns={'GC=F':'Precio oro', 'CNY=X':'TC yuan'})
+ajuste['Ajuste oro'] = (ajuste.loc['2025-01-31']['Precio oro'])*1.98-ajuste['Precio oro']*1.98
+ajuste['Ajuste yuan'] = 35000/ajuste['TC yuan'] - 35000/(ajuste.loc['2025-01-31']['TC yuan']) 
 
-RIN = Reservas_Brutas.join(Encajes, how='inner').join(ajuste, how='inner')
+DEGs = sdr.fetch_exchange_rates()
+# Asegurar que la columna fecha sea datetime
+DEGs["date"] = pd.to_datetime(DEGs["date"])
+# Filtrar desde 2025-01-31 inclusive
+DEGs = DEGs[DEGs["date"] >= "2023-01-01"].copy()
+DEGs = DEGs.set_index("date")
+DEGs.index.name = 'fecha'
+DEGs.columns = ['DEGs']
+
+RIN = Reservas_Brutas.join(Encajes, how='inner').join(ajuste, how='inner').join(DEGs, how='inner')
 RIN = RIN[RIN.index>'2022-12-31']
-RIN['FMI'] = 0.0
-RIN.loc[RIN.index > '2025-04-14', 'FMI'] = 9160* 1.30383
-RIN.loc[RIN.index > '2025-08-01', 'FMI'] = 10689 * 1.30383
+DEGs_31_ene_25 = RIN.loc['2025-01-31', 'DEGs']
+
+RIN['FMI DEGs'] = 0.0
+RIN.loc[RIN.index > '2025-04-14', 'FMI DEGs'] = 9160
+RIN.loc[RIN.index > '2025-08-01', 'FMI DEGs'] = 10689 
+RIN['Desembolsos FMI'] = 0.0
+RIN.loc[RIN.index > '2025-04-14', 'Desembolsos FMI'] = 9160* RIN['DEGs']
+RIN.loc[RIN.index > '2025-08-01', 'Desembolsos FMI'] = 10689 * RIN['DEGs']
+RIN['Ajuste DEGs'] = (RIN['DEGs']-DEGs_31_ene_25)*RIN['FMI DEGs']
 RIN['Swap USA'] = 0.0
 RIN.loc[RIN.index > '2025-04-14', 'Swap USA'] = 2537.59
+RIN['Swap China'] = 130000 / RIN['TC yuan']
 
-RIN['RIN'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-RIN['obligaciones_ooii']-130000/RIN['yuan']-RIN['Swap USA']-RIN['FMI']
-RIN['RIN_pp'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-RIN['obligaciones_ooii']-130000/RIN['yuan']-RIN['Swap USA']-RIN['FMI']+RIN['ajuste_oro']+RIN['ajuste_yuan']
-RIN['RIN_incluye_fmi'] = RIN['Reservas_Brutas']-RIN['Encajes']-RIN['Cortos']-RIN['obligaciones_ooii']-130000/RIN['yuan']-RIN['Swap USA']
-RIN = RIN[['RIN_incluye_fmi','RIN','RIN_pp']]
+RIN['RIN'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']-RIN['Desembolsos FMI']
+RIN['RIN precios 31/1'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']-RIN['Desembolsos FMI']+RIN['Ajuste oro']+RIN['Ajuste yuan']+RIN['Ajuste DEGs']
+RIN['RIN (incluye fmi)'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']
+RIN = RIN[['RIN precios 31/01','RIN','Encajes','Swap China','Swap USA','Pases','Obligaciones OOII','Desembolsos FMI','Ajuste oro','Ajuste yuan','Ajuste DEGs']]
 RIN = RIN[::-1]
 RIN.columns = ['RIN incluye desembolsos FMI','RIN','RIN a precios 31/01/25']
 for col in RIN.columns:
@@ -368,6 +384,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
