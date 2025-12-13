@@ -289,7 +289,6 @@ RIN['RIN precios 31/01'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RI
 RIN['RIN (incluye fmi)'] = RIN['Reservas Brutas']-RIN['Encajes']-RIN['Pases']-RIN['Obligaciones OOII']-RIN['Swap China']-RIN['Swap USA']
 RIN = RIN[['RIN precios 31/01','RIN','Encajes','Swap China','Swap USA','Pases','Obligaciones OOII','Desembolsos FMI','Ajuste oro','Ajuste yuan','Ajuste DEGs']]
 RIN = RIN[::-1]
-RIN.columns = ['RIN incluye desembolsos FMI','RIN','RIN a precios 31/01/25']
 for col in RIN.columns:
     RIN[col] = pd.to_numeric(RIN[col], errors='coerce')
 RIN = RIN.round(2)
@@ -384,6 +383,7 @@ diar_bas_var.to_csv('Depósitos_tesoro_variación_diaria_y_factores_de_explicaci
 #IED = IED.round(2)
 #IED = IED[::-1]
 #IED.to_csv('Inversión_Extranjera_Directa_Trimestral.csv',index=True)
+
 
 
 
