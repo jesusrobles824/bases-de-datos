@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Análisis Económico | Visualizaciones</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;           /* slate-900 */
+      --panel: #111827;        /* gray-900 */
+      --card: #020617;         /* slate-950 */
+      --text: #e5e7eb;         /* gray-200 */
+      --muted: #94a3b8;        /* slate-400 */
+      --accent: #38bdf8;       /* sky-400 */
+      --accent-soft: rgba(56,189,248,0.15);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #020617 60%, #020617 100%);
+      color: var(--text);
+    }
+
+    header {
+      padding: 3rem 1.5rem 2.5rem;
+      max-width: 1200px;
+      margin: auto;
+    }
+
+    header h1 {
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem 0;
+    }
+
+    header p {
+      color: var(--muted);
+      max-width: 720px;
+      font-size: 1.05rem;
+      line-height: 1.6;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: linear-gradient(180deg, #020617, #020617);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(148,163,184,0.15);
+      transition: transform .25s ease, box-shadow .25s ease, border .25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.45);
+      border: 1px solid rgba(56,189,248,0.45);
+    }
+
+    .card img {
+      width: 100%;
+      height: 210px;
+      object-fit: cover;
+      display: block;
+      background: #020617;
+    }
+
+    .card-content {
+      padding: 1rem 1.1rem 1.2rem;
+    }
+
+    .card-content h3 {
+      margin: 0 0 0.4rem 0;
+      font-size: 1.05rem;
+      font-weight: 600;
+      line-height: 1.4;
+    }
+
+    .card-content p {
+      margin: 0 0 0.8rem 0;
+      font-size: 0.9rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(56,189,248,0.35);
+    }
+
+    footer {
+      border-top: 1px solid rgba(148,163,184,0.15);
+      padding: 1.5rem;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    footer span {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Responsive tweaks */
+    @media (max-width: 480px) {
+      header h1 { font-size: 1.9rem; }
+      .card img { height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Análisis económico y financiero</h1>
+    <p>
+      Visualizaciones propias sobre macroeconomía, mercado financiero y sector externo.
+      Gráficos pensados para lectura rápida, estética profesional y foco analítico.
+    </p>
+  </header>
+
+  <main>
+    <section class="grid">
+
+      <!-- CARD 1 -->
+      <article class="card">
+        <img src="images/ejemplo1.png" alt="Inflación interanual y núcleo" />
+        <div class="card-content">
+          <h3>Inflación: general vs núcleo</h3>
+          <p>
+            Evolución interanual con descomposición de efectos transitorios y persistentes.
+          </p>
+          <div class="tags">
+            <span class="tag">Inflación</span>
+            <span class="tag">IPC</span>
+            <span class="tag">Argentina</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 2 -->
+      <article class="card">
+        <img src="images/ejemplo2.png" alt="Reservas internacionales" />
+        <div class="card-content">
+          <h3>Reservas internacionales del BCRA</h3>
+          <p>
+            Stock y variaciones recientes, con énfasis en flujos financieros y comerciales.
+          </p>
+          <div class="tags">
+            <span class="tag">BCRA</span>
+            <span class="tag">Reservas</span>
+            <span class="tag">Sector externo</span>
+          </div>
+        </div>
+      </article>
+
+      <!-- CARD 3 -->
+      <article class="card">
+        <img src="images/ejemplo3.png" alt="Bonos soberanos" />
+        <div class="card-content">
+          <h3>Bonos soberanos y riesgo país</h3>
+          <p>
+            Curva de rendimientos, spreads y lectura de expectativas del mercado.
+          </p>
+          <div class="tags">
+            <span class="tag">Bonos</span>
+            <span class="tag">Riesgo país</span>
+            <span class="tag">Finanzas</span>
+          </div>
+        </div>
+      </article>
+
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026</span> · Análisis económico independiente · Hecho con datos públicos
+  </footer>
+
+</body>
+</html>
